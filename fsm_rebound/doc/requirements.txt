@@ -1,5 +1,8 @@
 Está integrado con FSM
 Tiene una función de inicialización que rellena una estructura
+
+Una llamada a fsm_fire llama a la función de guarda, si el estado es READY.
+
 Se puede registrar una función de guarda que indica si ha ocurrido el evento
 Una llamada a fsm_fire llama a esta función, si el estado es READY.
 Si la función devuelve TRUE, se cambia al estado WAIT.

@@ -3,6 +3,8 @@
 #include "fsm_rebound.h"
 #include "fsm_rebound_internal.h"
 
+#include "timer.h"
+
 static int
 fsm_rebound_check(fsm_t* f)
 {
@@ -14,10 +16,17 @@ fsm_rebound_check(fsm_t* f)
     return 0;
 }
 
+static int
+fsm_rebound_is_timeout(fsm_t* f)
+{
+    return timer_get_tick();
+}
+
 
 static fsm_trans_t
 rebound_tt[] = {
     {READY, fsm_rebound_check, WAIT, NULL},
+    {WAIT, fsm_rebound_is_timeout, READY, NULL},
     {-1, NULL, -1, NULL}
 };
 

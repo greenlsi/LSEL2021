@@ -7,6 +7,7 @@
 #include "fsm_rebound_internal.h"
 
 #include "mock_client.h"
+#include "mock_timer.h"
 
 void setUp(void)
 {
@@ -43,6 +44,8 @@ void test_fsm_rebound_fsmFireNoCallsCheckWhenWait(void)
 {
     fsm_rebound_t f;
 
+    timer_get_tick_IgnoreAndReturn(0);
+
     fsm_rebound_init(&f, custom_check);
     f.fsm.current_state = WAIT;
     fsm_fire((fsm_t*)(&f));
@@ -70,4 +73,25 @@ void test_fsm_rebound_fsmFireDontFollowTransitionWhenReadyAndCheckIsFalse(void)
     fsm_fire((fsm_t*)(&f));
 
     TEST_ASSERT(f.fsm.current_state == READY);
+}
+
+void test_fsm_rebound_fsmFireCallsGetTickWhenWait(void)
+{
+    fsm_rebound_t f;
+
+    timer_get_tick_ExpectAndReturn(0);
+
+    fsm_rebound_init(&f, NULL);
+    f.fsm.current_state = WAIT;
+
+    fsm_fire((fsm_t*)(&f));
+}
+
+void test_fsm_rebound_fsmFireNoCallsGetTickWhenReady(void)
+{
+    fsm_rebound_t f;
+
+    fsm_rebound_init(&f, NULL);
+    TEST_ASSERT(f.fsm.current_state == READY);
+    fsm_fire((fsm_t*)(&f));
 }

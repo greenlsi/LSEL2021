@@ -217,3 +217,38 @@ void test_fsm_rebound_fsmFireWaitToReadyCallsResetFunction(void)
 
     TEST_ASSERT(f.fsm.current_state == READY);
 }
+
+void test_fsm_rebound_fsmFireAntiReboundOf5Complete(void)
+{
+    fsm_rebound_t f;
+
+    fsm_rebound_init(&f, custom_check, custom_reset, 5);
+    TEST_ASSERT(f.fsm.current_state == READY);
+
+    custom_check_ExpectAndReturn(0);
+    fsm_fire(&(f.fsm));   
+    TEST_ASSERT(f.fsm.current_state == READY);
+
+    custom_check_ExpectAndReturn(1);
+    timer_get_tick_ExpectAndReturn(20);
+    fsm_fire(&(f.fsm));
+    TEST_ASSERT(f.fsm.current_state == WAIT);
+
+    timer_get_tick_ExpectAndReturn(22);
+    fsm_fire(&(f.fsm));
+    TEST_ASSERT(f.fsm.current_state == WAIT);
+
+    timer_get_tick_ExpectAndReturn(24);
+    fsm_fire(&(f.fsm));
+    TEST_ASSERT(f.fsm.current_state == WAIT);
+
+    timer_get_tick_ExpectAndReturn(26);
+    custom_reset_Expect();
+    fsm_fire(&(f.fsm));
+    TEST_ASSERT(f.fsm.current_state == READY);
+
+    custom_check_ExpectAndReturn(0);
+    fsm_fire(&(f.fsm));   
+    TEST_ASSERT(f.fsm.current_state == READY);
+
+}

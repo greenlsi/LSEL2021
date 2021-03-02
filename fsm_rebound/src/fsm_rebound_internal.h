@@ -8,6 +8,4 @@ enum {
     WAIT
 };
 
-int fsm_rebound_check(fsm_t* f);
-
 #endif

@@ -4,7 +4,9 @@
 
 #include "fsm.h"
 #include "fsm_rebound.h"
-#include "mock_fsm_rebound_internal.h"
+#include "fsm_rebound_internal.h"
+
+#include "mock_client.h"
 
 void setUp(void)
 {
@@ -21,7 +23,7 @@ void test_fsm_rebound_fsmInitFillsStructWithSomething(void)
     bzero(&zero, sizeof(fsm_rebound_t));
     bzero(&f, sizeof(fsm_rebound_t));
 
-    fsm_rebound_init(&f);
+    fsm_rebound_init(&f, NULL);
     TEST_ASSERT(memcmp(&zero, &f, sizeof(fsm_rebound_t)) != 0);
 }
 
@@ -29,9 +31,9 @@ void test_fsm_rebound_fsmFireCallsCheckWhenReady(void)
 {
     fsm_rebound_t f;
 
-    fsm_rebound_check_ExpectAnyArgsAndReturn(0);
+    custom_check_ExpectAndReturn(0);
 
-    fsm_rebound_init(&f);
+    fsm_rebound_init(&f, custom_check);
 
     TEST_ASSERT(f.fsm.current_state == READY);
     fsm_fire((fsm_t*)(&f));
@@ -41,7 +43,7 @@ void test_fsm_rebound_fsmFireNoCallsCheckWhenWait(void)
 {
     fsm_rebound_t f;
 
-    fsm_rebound_init(&f);
+    fsm_rebound_init(&f, custom_check);
     f.fsm.current_state = WAIT;
     fsm_fire((fsm_t*)(&f));
 }
@@ -50,9 +52,9 @@ void test_fsm_rebound_fsmFireFollowsTransitionWhenReadyAndCheckIsTrue(void)
 {
     fsm_rebound_t f;
 
-    fsm_rebound_check_IgnoreAndReturn(1);
+    custom_check_IgnoreAndReturn(1);
 
-    fsm_rebound_init(&f);
+    fsm_rebound_init(&f, custom_check);
     fsm_fire((fsm_t*)(&f));
 
     TEST_ASSERT(f.fsm.current_state == WAIT);
@@ -62,9 +64,9 @@ void test_fsm_rebound_fsmFireDontFollowTransitionWhenReadyAndCheckIsFalse(void)
 {
     fsm_rebound_t f;
 
-    fsm_rebound_check_IgnoreAndReturn(0);
+    custom_check_IgnoreAndReturn(0);
 
-    fsm_rebound_init(&f);
+    fsm_rebound_init(&f, custom_check);
     fsm_fire((fsm_t*)(&f));
 
     TEST_ASSERT(f.fsm.current_state == READY);

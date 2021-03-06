@@ -35,8 +35,8 @@ jobs:
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
-      with:
-        limit-access-to-actor: true
+    #  with:
+    #    limit-access-to-actor: true
     #To continue: sudo touch /continue
 
     - name: Go to fsm_rebound folder

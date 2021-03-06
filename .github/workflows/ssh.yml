@@ -1,14 +1,10 @@
 # This is a basic workflow to help you get started with# Run Ceedling tests
 
-name: Ceedling
+name: SSH
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
     branches: [ master, action ]
 
@@ -24,23 +20,8 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Set up Ruby 2.7
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.7.2      
-        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-
-    - name: Install Ceedling
-      run: gem install ceedling
-
-    #- name: Setup tmate session
-    #  uses: mxschmitt/action-tmate@v3
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     #  with:
     #    limit-access-to-actor: true
     #To continue: sudo touch /continue
-
-    - name: Do testing on fsm_rebound
-      run: |
-        cd fsm_rebound
-        mkdir test/support
-        ceedling test:all

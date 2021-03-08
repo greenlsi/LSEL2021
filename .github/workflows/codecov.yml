@@ -33,7 +33,7 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Install gcovr
-        run: apt-get install gcovr
+        run: sudo apt-get install gcovr
 
       - name: Install Ceedling
         run: gem install ceedling

@@ -1,0 +1,51 @@
+# This is a basic workflow to help you get started with Actions
+
+name: codecov
+
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    branches: [ main ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Ceedling generate coverage report
+      #- name: Do testing on fsm_rebound
+      #  uses: docker://throwtheswitch/madsciencelab:latest
+      #  with:
+      #    entrypoint: /github/workspace/do_coverage.sh
+
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2      
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Install gcovr
+        run: sudo apt-get install gcovr
+
+      - name: Install Ceedling
+        run: gem install ceedling
+
+      - name: Do coverage on fsm_rebound
+        run: |
+          cd fsm_rebound
+          mkdir test/support
+          ceedling gcov:all utils:gcov
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
